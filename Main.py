@@ -1,11 +1,12 @@
+import PathFile
 import PySimpleGUI as Sg
 import DbContext as Db
 import App
 
-# Scelta Tema Grafico
+# Scelta Tema Grafico #
 Sg.theme("Dark")
 
-# Elementi della Finestra
+# Elementi della Finestra #
 Layout = [
     # Riga 1 #
     [
@@ -27,26 +28,20 @@ Layout = [
     ],
     # Riga 3 #
     [
-        Sg.B("Exit (Ctrl + x)", k="Exit", s=20, pad=(0, 10))
+        Sg.B("Exit (Ctrl + x)", k="Exit", s=20, pad=10)
     ],
-    # Riga 4 Finestra
+    # Riga 4 #
     [
         Sg.StatusBar("", k="Sbar", expand_x=True, justification="center", s=50)
     ],
 ]
 
-# Creazione Finestra
+# Creazione Finestra #
 Window = Sg.Window("Ore Produzione", Layout, return_keyboard_events=True, finalize=True)
 
-# Connette al Database
-if Db.Connect():
-    Window["Sbar"].update("Connessione Database Ok")
-else:
-    Sg.popup_ok("Errore Connessione Database")
-
-# Main Loop
+# Main Loop #
 while True:
-    Event, Values = Window.read(timeout=100)
+    Event, Values = Window.read()
     if Event in (Sg.WINDOW_CLOSED, "Exit"):
         break
 
@@ -58,5 +53,14 @@ while True:
         MeseAnno = "%/" + App.NumeroMese(Values["CbxMese"]) +"/" + Values["CbxAnno"]
         Sg.popup_ok("Tempo Produzione Mese {}-{}: {} Ore".format(Values["CbxMese"], Values["CbxAnno"],
                                                              Db.CalcolaTempo(Values["CbxTabella"], MeseAnno)))
+
+    if Event == "BtnRegistra":
+        MeseAnno = "%/" + App.NumeroMese(Values["CbxMese"]) +"/" + Values["CbxAnno"]
+        Dato = Db.CalcolaTempo(Values["CbxTabella"], MeseAnno)
+        Err = Db.Registra(Values["CbxTabella"], App.GetColonna(Values["CbxMese"]), Values["CbxAnno"], Dato)
+        if Err is None:
+            Window["Sbar"].update("Registrato Dato su Database")
+        else:
+            Window["Sbar"].update("Errore Registrazione Dato")
 
 Window.close()

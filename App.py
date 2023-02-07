@@ -25,3 +25,21 @@ def NumeroMese(Mese):
         "Dicembre": "12",
     }
     return MeseNumero[Mese]
+
+# Ritorna colonna database #
+def GetColonna(Mese):
+    Colonna = {
+        "Gennaio": "Gen",
+        "Febbraio": "Feb",
+        "Marzo": "Mar",
+        "Aprile": "Apr",
+        "Maggio": "Mag",
+        "Giugno": "Giu",
+        "Luglio": "Lug",
+        "Agosto": "Ago",
+        "Settembre": "Sett",
+        "Ottobre": "Ott",
+        "Novembre": "Nov",
+        "Dicembre": "Dic",
+    }
+    return Colonna[Mese]

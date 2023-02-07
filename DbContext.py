@@ -36,14 +36,25 @@ def CalcolaTempo(Tabella, Data):
     Cur = Conn.cursor()
     Cur.execute(f"Select Ora From {Tabella} Where Data Like \"{Data}\" Order By RowId Desc")
     ListaOre = Cur.fetchall()
+    if not bool(Cur.rowcount): return 0.0
     Totale = 0
     Hms1 = ListaOre[0][0].split(".")
     for Ora in ListaOre:
         Ora1 = timedelta(hours=int(Hms1[0]), minutes=int(Hms1[1]), seconds=int(Hms1[2]))
         Hms2 = Ora[0].split(".")
         Ora2 = timedelta(hours=int(Hms2[0]), minutes=int(Hms2[1]), seconds=int(Hms2[2]))
-        if Ora1.seconds > Ora2.seconds: Totale += Ora1.seconds - Ora2.seconds
         Hms1 = Hms2
-
+        if Ora1.seconds < Ora2.seconds: continue
+        if (Ora1.seconds - Ora2.seconds) < 1800: Totale += Ora1.seconds - Ora2.seconds
     return "{:.2f}".format(Totale / 3600)
+
+def Registra(Tabella, Colonna, Anno, Dato):
+    try:
+        Conn = Connect()
+        Cur = Conn.cursor()
+        Cur.execute(f"Update {Tabella} Set {Colonna} = \"{Dato}\" Where Anno = \"{Anno}\"")
+        Conn.commit()
+    except:
+        return False
+
     
