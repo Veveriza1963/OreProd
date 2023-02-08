@@ -1,5 +1,6 @@
 import mariadb as Sql
 from datetime import timedelta
+import re
 
 Param_Conn = {"host": "192.168.0.37", "user": "Gomsil", "password": "Gomsil123"}
 
@@ -37,11 +38,12 @@ def CalcolaTempo(Tabella, Data):
     Cur.execute(f"Select Ora From {Tabella} Where Data Like \"{Data}\" Order By RowId Desc")
     ListaOre = Cur.fetchall()
     if not bool(Cur.rowcount): return 0.0
+    Sep = re.search("[.:]", ListaOre[0][0]).group()
     Totale = 0
-    Hms1 = ListaOre[0][0].split(".")
+    Hms1 = ListaOre[0][0].split(Sep)
     for Ora in ListaOre:
         Ora1 = timedelta(hours=int(Hms1[0]), minutes=int(Hms1[1]), seconds=int(Hms1[2]))
-        Hms2 = Ora[0].split(".")
+        Hms2 = Ora[0].split(Sep)
         Ora2 = timedelta(hours=int(Hms2[0]), minutes=int(Hms2[1]), seconds=int(Hms2[2]))
         Hms1 = Hms2
         if Ora1.seconds < Ora2.seconds: continue

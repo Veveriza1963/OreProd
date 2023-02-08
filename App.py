@@ -9,8 +9,8 @@ def CreaListaTab():
     return ListaTab
 
 # Ritorna numero rispetto mese #
-def NumeroMese(Mese):
-    MeseNumero = {
+def MeseToNumero(Mese):
+    X = {
         "Gennaio": "01",
         "Febbraio": "02",
         "Marzo": "03",
@@ -24,7 +24,25 @@ def NumeroMese(Mese):
         "Novembre": "11",
         "Dicembre": "12",
     }
-    return MeseNumero[Mese]
+    return X[Mese]
+
+# Ritorna mese rispetto numero #
+def NumeroToMese(Mese):
+    X = {
+        "01": "Gennaio",
+        "02": "Febbraio",
+        "03": "Marzo",
+        "04": "Aprile",
+        "05": "Maggio",
+        "06": "Giugno",
+        "07": "Luglio",
+        "08": "Agosto",
+        "09": "Settembre",
+        "10": "Ottobre",
+        "11": "Novembre",
+        "12": "Dicembre",
+    }
+    return X[Mese]
 
 # Ritorna colonna database #
 def GetColonna(Mese):

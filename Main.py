@@ -1,6 +1,7 @@
 import PathFile
 import PySimpleGUI as Sg
 import DbContext as Db
+import datetime as Dt
 import App
 
 # Scelta Tema Grafico #
@@ -14,9 +15,9 @@ Layout = [
         Sg.Combo(App.CreaListaTab(), s=(10, 20), enable_events=True, readonly=True, k="CbxTabella", pad=10),
         Sg.T("Calcola Ore:", font="size 10", pad=(10, 10)),
         Sg.Combo(["2021", "2022", "2023", "2024", "2025", "2026"], k="CbxAnno", s=(20, 5),
-                 pad=10, default_value="2023"),
+                 pad=10),
         Sg.Combo(["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre",
-                  "Ottobre", "Novembre", "Dicembre"], pad=10, s=(20, 12), default_value="Gennaio", k="CbxMese"),
+                  "Ottobre", "Novembre", "Dicembre"], pad=10, s=(20, 12), k="CbxMese"),
         Sg.B("Visualizza", k="BtnVisualizza", pad=10),
         Sg.B("Registra", k="BtnRegistra", pad=10)
     ],
@@ -39,6 +40,11 @@ Layout = [
 # Creazione Finestra #
 Window = Sg.Window("Ore Produzione", Layout, return_keyboard_events=True, finalize=True)
 
+# Setup #
+Oggi = Dt.date.today()
+Window["CbxMese"].update(value=App.NumeroToMese(Oggi.strftime("%m")))
+Window["CbxAnno"].update(value=Oggi.strftime("%Y"))
+
 # Main Loop #
 while True:
     Event, Values = Window.read()
@@ -50,12 +56,12 @@ while True:
         Window["Table"].update(Values["Table"])
 
     if Event == "BtnVisualizza":
-        MeseAnno = "%/" + App.NumeroMese(Values["CbxMese"]) +"/" + Values["CbxAnno"]
+        MeseAnno = "%/" + App.MeseToNumero(Values["CbxMese"]) +"/" + Values["CbxAnno"]
         Sg.popup_ok("Tempo Produzione Mese {}-{}: {} Ore".format(Values["CbxMese"], Values["CbxAnno"],
                                                              Db.CalcolaTempo(Values["CbxTabella"], MeseAnno)))
 
     if Event == "BtnRegistra":
-        MeseAnno = "%/" + App.NumeroMese(Values["CbxMese"]) +"/" + Values["CbxAnno"]
+        MeseAnno = "%/" + App.MeseToNumero(Values["CbxMese"]) +"/" + Values["CbxAnno"]
         Dato = Db.CalcolaTempo(Values["CbxTabella"], MeseAnno)
         Err = Db.Registra(Values["CbxTabella"], App.GetColonna(Values["CbxMese"]), Values["CbxAnno"], Dato)
         if Err is None:
