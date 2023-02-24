@@ -1,18 +1,17 @@
 import PathFile
 import PySimpleGUI as Sg
 import DbContext as Db
-import datetime as Dt
 import App
 
 # Scelta Tema Grafico #
-Sg.theme("Dark")
+Sg.theme("Material1")
 
 # Elementi della Finestra #
 Layout = [
     # Riga 1 #
     [
         Sg.T("Tabella Selezionata:", pad=(0, 10), font="size 10"),
-        Sg.Combo(App.CreaListaTab(), s=(10, 20), enable_events=True, readonly=True, k="CbxTabella", pad=10),
+        Sg.Combo(App.ListaTab, s=(10, 20), enable_events=True, readonly=True, k="CbxTabella", pad=10),
         Sg.T("Calcola Ore:", font="size 10", pad=(10, 10)),
         Sg.Combo(["2021", "2022", "2023", "2024", "2025", "2026"], k="CbxAnno", s=(20, 5),
                  pad=10),
@@ -41,31 +40,36 @@ Layout = [
 Window = Sg.Window("Ore Produzione", Layout, return_keyboard_events=True, finalize=True)
 
 # Setup #
-Oggi = Dt.date.today()
-Window["CbxMese"].update(value=App.NumeroToMese(Oggi.strftime("%m")))
-Window["CbxAnno"].update(value=Oggi.strftime("%Y"))
+Window["CbxMese"].update(value=App.NumeroToMese[App.Oggi.strftime("%m")])
+Window["CbxAnno"].update(value= App.Oggi.strftime("%Y"))
+
+# Refresh dati tabella #
+def Refresh():
+    Window["Table"].update(Db.GetAllData(Values["CbxTabella"]))
 
 # Main Loop #
 while True:
     Event, Values = Window.read()
-    if Event in (Sg.WINDOW_CLOSED, "Exit"):
+    if Event in (Sg.WIN_CLOSED, "Exit"):
         break
 
     if Event == "CbxTabella":
-        Values["Table"] = Db.GetAllData(Values["CbxTabella"])
-        Window["Table"].update(Values["Table"])
+        Refresh()
 
     if Event == "BtnVisualizza":
-        MeseAnno = "%/" + App.MeseToNumero(Values["CbxMese"]) +"/" + Values["CbxAnno"]
+        MeseAnno = "%/" + App.MeseToNumero[Values["CbxMese"]] +"/" + Values["CbxAnno"]
         Sg.popup_ok("Tempo Produzione Mese {}-{}: {} Ore".format(Values["CbxMese"], Values["CbxAnno"],
                                                              Db.CalcolaTempo(Values["CbxTabella"], MeseAnno)))
 
     if Event == "BtnRegistra":
-        MeseAnno = "%/" + App.MeseToNumero(Values["CbxMese"]) +"/" + Values["CbxAnno"]
+        Window["Sbar"].update("Registrazione in Corso.....")
+        Window.refresh()
+        MeseAnno = "%/" + App.MeseToNumero[Values["CbxMese"]] +"/" + Values["CbxAnno"]
         Dato = Db.CalcolaTempo(Values["CbxTabella"], MeseAnno)
-        Err = Db.Registra(Values["CbxTabella"], App.GetColonna(Values["CbxMese"]), Values["CbxAnno"], Dato)
+        Err = Db.Registra(Values["CbxTabella"], App.Colonna[Values["CbxMese"]], Values["CbxAnno"], Dato)
         if Err is None:
             Window["Sbar"].update("Registrato Dato su Database")
+            Refresh()
         else:
             Window["Sbar"].update("Errore Registrazione Dato")
 

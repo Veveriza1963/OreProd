@@ -1,34 +1,29 @@
-# Creo lista tabelle per combo box
-ListaTab = []
-def CreaListaTab():
-    for Index in range(1, 21):
-        if Index in [15, 16, 17]:
-            continue
-        ListaTab.append(f"P{str(Index)}")
+from datetime import date as Dt
 
-    return ListaTab
+# Creo lista tabelle per combo box
+ListaTab = [f"P{str(I)}" for I in range(1, 21) if I not in [15, 16, 17]]
+
+# Data di oggi #
+Oggi = Dt.today()
 
 # Ritorna numero rispetto mese #
-def MeseToNumero(Mese):
-    X = {
-        "Gennaio": "01",
-        "Febbraio": "02",
-        "Marzo": "03",
-        "Aprile": "04",
-        "Maggio": "05",
-        "Giugno": "06",
-        "Luglio": "07",
-        "Agosto": "08",
-        "Settembre": "09",
-        "Ottobre": "10",
-        "Novembre": "11",
-        "Dicembre": "12",
-    }
-    return X[Mese]
+MeseToNumero = {
+    "Gennaio": "01",
+    "Febbraio": "02",
+    "Marzo": "03",
+    "Aprile": "04",
+    "Maggio": "05",
+    "Giugno": "06",
+    "Luglio": "07",
+    "Agosto": "08",
+    "Settembre": "09",
+    "Ottobre": "10",
+    "Novembre": "11",
+    "Dicembre": "12",
+}
 
 # Ritorna mese rispetto numero #
-def NumeroToMese(Mese):
-    X = {
+NumeroToMese = {
         "01": "Gennaio",
         "02": "Febbraio",
         "03": "Marzo",
@@ -41,12 +36,10 @@ def NumeroToMese(Mese):
         "10": "Ottobre",
         "11": "Novembre",
         "12": "Dicembre",
-    }
-    return X[Mese]
+}
 
 # Ritorna colonna database #
-def GetColonna(Mese):
-    Colonna = {
+Colonna = {
         "Gennaio": "Gen",
         "Febbraio": "Feb",
         "Marzo": "Mar",
@@ -60,4 +53,3 @@ def GetColonna(Mese):
         "Novembre": "Nov",
         "Dicembre": "Dic",
     }
-    return Colonna[Mese]
